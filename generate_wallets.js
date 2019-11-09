@@ -6,6 +6,7 @@
  */
 
 const { exec } = require('child_process')
+const path = require('path')
 const bitcoin = require('bitcoinjs-lib')
 const bip32 = require('bip32')
 const bip39 = require('bip39')
