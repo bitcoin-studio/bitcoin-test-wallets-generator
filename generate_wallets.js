@@ -6,6 +6,7 @@
  */
 
 const { exec } = require('child_process')
+const path = require('path')
 const bitcoin = require('bitcoinjs-lib')
 const bip32 = require('bip32')
 const bip39 = require('bip39')
@@ -147,7 +148,7 @@ wallets.forEach((wallet, wallet_index) => {
   console.log()
 })
 
-
+const libDir = path.resolve(process.cwd(), 'node_modules', 'bitcointestwalletsgenerator')
 exec(
   // Write the json file
   `echo '${walletsJSON}' | jq . > wallets.json`, (error, stdout, stderr) => {
@@ -159,7 +160,7 @@ exec(
     console.log('wallets.json has been written successfully')
 
     // Import private keys to Bitcoin Core
-    exec('./import_privkeys.sh', (error, stdout, stderr) => {
+    exec('./import_privkeys.sh', {'cwd': libDir}, (error, stdout, stderr) => {
       if (error) {
         console.error('stderr', stderr)
         throw error
