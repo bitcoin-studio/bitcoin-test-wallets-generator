@@ -208,8 +208,10 @@ exec(
 
     // Import private keys to Bitcoin Core
     exec('./import_privkeys.sh', {'cwd': libDir}, (error, stdout, stderr) => {
-      error && console.error(stderr)
-      stdout && console.log(stdout)
-      console.log('Private keys have been imported to Bitcoin Core successfully')
+      if (error) {
+        console.error(stderr)
+      } else {
+        console.log('Private keys have been imported to Bitcoin Core successfully')
+      }
     })
   })
