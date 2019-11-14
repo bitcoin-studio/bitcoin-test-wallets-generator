@@ -1,7 +1,7 @@
 {
   "name": "bitcointestwalletsgenerator",
-  "version": "1.0.0",
-  "description": "Bitcoin wallets generator to help bitcoin programmers",
+  "version": "1.0.2",
+  "description": "Bitcoin test wallets generator to help bitcoin programmers",
   "main": "generate_wallets.js",
   "scripts": {
     "entropy": "node -p 'require(\"crypto\").randomBytes(Number(process.argv.slice(1)[0])).toString(\"hex\");'"
