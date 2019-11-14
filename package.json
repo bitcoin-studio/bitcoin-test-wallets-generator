@@ -1,6 +1,6 @@
 {
   "name": "bitcointestwalletsgenerator",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Bitcoin test wallets generator to help bitcoin programmers",
   "main": "generate_wallets.js",
   "scripts": {

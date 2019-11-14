@@ -204,13 +204,11 @@ exec(
     }
     stdout && console.log(stdout)
     console.log('wallets.json has been written successfully')
+    console.log()
 
     // Import private keys to Bitcoin Core
     exec('./import_privkeys.sh', {'cwd': libDir}, (error, stdout, stderr) => {
-      if (error) {
-        console.error('stderr', stderr)
-        throw error
-      }
+      error && console.error(stderr)
       stdout && console.log(stdout)
       console.log('Private keys have been imported to Bitcoin Core successfully')
     })
