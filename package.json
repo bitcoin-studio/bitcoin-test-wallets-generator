@@ -1,10 +1,13 @@
 {
   "name": "bitcointestwalletsgenerator",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Bitcoin test wallets generator to help bitcoin programmers",
   "main": "generate_wallets.js",
   "scripts": {
     "entropy": "node -p 'require(\"crypto\").randomBytes(Number(process.argv.slice(1)[0])).toString(\"hex\");'"
+  },
+  "bin": {
+    "bitcointestwallets": "./generate_wallets.js"
   },
   "author": {
     "name": "Stephane Roche",
@@ -15,6 +18,7 @@
   "dependencies": {
     "bip32": "^2.0.4",
     "bip39": "^3.0.2",
-    "bitcoinjs-lib": "^4.0.5"
+    "bitcoinjs-lib": "^4.0.5",
+    "commander": "^4.0.1"
   }
 }

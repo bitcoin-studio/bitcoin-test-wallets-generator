@@ -1,69 +1,115 @@
+#!/usr/bin/env node
+
 /**
  * Features
  * - Generate wallets (Alice, Bob, Carol, Dave Eve, Mallory)
  * - Create a json file with all cryptographic materials
  * - Import private keys to Bitcoin Core
  */
-
+const crypto = require("crypto")
+const program = require('commander')
 const { exec } = require('child_process')
 const path = require('path')
 const bitcoin = require('bitcoinjs-lib')
 const bip32 = require('bip32')
 const bip39 = require('bip39')
-// Change the network appropriately (bitcoin, testnet, regtest)
-const network = bitcoin.networks.regtest
 
-// Replace these values if necessary
-// 128 bits / 16 bytes entropy => 12 mnemonic words
-// 256 bits / 32 bytes entropy => 24 mnemonic words
-// $ npm run entropy 16
-const wallets = [
-  {alice: '182301471f6892728ae56bb95b54396e'},
-  {bob: '28c8b37e1462a460fafa440d3ec66d29'},
-  {carol: '61628dbe355f4675d895d399b984aaf4'},
-  {dave: '6dc790b775c765abbbd981c0cdbbce9e'},
-  {eve: 'd8ec0331d6228a59b17cb412700761f0'},
-  {mallory: '6af8462dd020ff7e2239a0a346d27448'}
-]
+program
+  .option(
+    '-e, --entropy <bytes>',
+    'generate wallets with new entropy \n' +
+    '16 bytes entropy => 12 mnemonic words \n' +
+    '32 bytes entropy => 24 mnemonic words')
+  .option(
+    '-n, --network <network>',
+    'set bitcoin network \n' +
+    'regtest, testnet or mainnet',
+    'regtest')
+  .option(
+    '-v, --verbose',
+    'verbose',
+    false)
+  .parse(process.argv)
 
-// Create a json file with main info
+const network = bitcoin.networks[program.network]
+let wallets
+
+if (program.entropy) {
+  wallets = [
+    {alice: crypto.randomBytes(Number(program.entropy)).toString("hex")},
+    {bob: crypto.randomBytes(Number(program.entropy)).toString("hex")},
+    {carol: crypto.randomBytes(Number(program.entropy)).toString("hex")},
+    {dave: crypto.randomBytes(Number(program.entropy)).toString("hex")},
+    {eve: crypto.randomBytes(Number(program.entropy)).toString("hex")},
+    {mallory: crypto.randomBytes(Number(program.entropy)).toString("hex")}
+  ]
+} else {
+  wallets = [
+    {alice: '182301471f6892728ae56bb95b54396e'},
+    {bob: '28c8b37e1462a460fafa440d3ec66d29'},
+    {carol: '61628dbe355f4675d895d399b984aaf4'},
+    {dave: '6dc790b775c765abbbd981c0cdbbce9e'},
+    {eve: 'd8ec0331d6228a59b17cb412700761f0'},
+    {mallory: '6af8462dd020ff7e2239a0a346d27448'}
+  ]
+}
+
+// Conditional log
+const log = (s, v) => {
+  if (program.verbose) {
+    s ? console.log(s) : console.log()
+    v && console.log(v)
+  }
+}
+
+// Capitalize
+const capitalize = (s) => {
+  return s.charAt(0).toUpperCase() + s.slice(1)
+}
+
+/**
+ * Create a json file with cryptographic materials
+ */
 let walletsJSON="{"
 
 // Iterate on wallets
 wallets.forEach((wallet, wallet_index) => {
+  //
+  let walletName = capitalize(Object.keys(wallet)[0])
+
   // Entropy
   let entropy = wallet[Object.keys(wallet)]
-  console.log(`${Object.keys(wallet)} entropy  `, entropy)
+  log(`${walletName} entropy:`, entropy)
   // Get mnemonic from entropy
   let mnemonic = bip39.entropyToMnemonic(wallet[Object.keys(wallet)])
-  console.log(`${Object.keys(wallet)} mnemonic  `, mnemonic)
+  log(`${walletName} mnemonic:`, mnemonic)
   // Get seed from mnemonic
   let seed = bip39.mnemonicToSeedSync(mnemonic)
-  console.log(`${Object.keys(wallet)} seed  `, seed.toString('hex'))
+  log(`${walletName} seed:`, seed.toString('hex'))
 
   // Get master BIP32 master from seed
   let master = bip32.fromSeed(seed, network)
 
   // Get BIP32 extended private key
   let xprivMaster = master.toBase58()
-  console.log(`${Object.keys(wallet)} master xpriv  `, xprivMaster)
+  log(`${walletName} master xpriv:`, xprivMaster)
   // Get master EC private key
   let privKeyMaster = master.privateKey.toString('hex')
-  console.log(`${Object.keys(wallet)} master privKey  `, privKeyMaster)
+  log(`${walletName} master privKey:`, privKeyMaster)
   // Get private key WIF
   let wifMaster = master.toWIF()
-  console.log(`${Object.keys(wallet)} master wif  `, wifMaster)
+  log(`${walletName} master wif:`, wifMaster)
 
   // Get BIP32 extended master public key
   let xpubMaster = master.neutered().toBase58()
-  console.log(`${Object.keys(wallet)} master xpub  `, xpubMaster)
+  log(`${walletName} master xpub:`, xpubMaster)
   // Get master public key
   let pubKeyMaster =  master.publicKey.toString('hex')
-  console.log(`${Object.keys(wallet)} master pubKey  `, pubKeyMaster)
+  log(`${walletName} master pubKey:`, pubKeyMaster)
   // Get master public key fingerprint
   let pubKeyFingerprintMaster = bitcoin.crypto.hash160(master.publicKey).slice(0,4).toString('hex')
-  console.log(`${Object.keys(wallet)} master pubKey fingerprint `, pubKeyFingerprintMaster)
-  console.log()
+  log(`${walletName} master pubKey fingerprint:`, pubKeyFingerprintMaster)
+  log()
 
   // Add cryptographic materials to json file
   walletsJSON +=
@@ -91,39 +137,39 @@ wallets.forEach((wallet, wallet_index) => {
 
     // Get child extended private key
     let xpriv = child.toBase58()
-    console.log(`${Object.keys(wallet)} child ${i} xpriv  `, xpriv)
+    log(`${walletName} child ${i} xpriv:`, xpriv)
     // Get child EC private key
     let privKey = child.privateKey.toString('hex')
-    console.log(`${Object.keys(wallet)} child ${i} privKey  `, privKey)
+    log(`${walletName} child ${i} privKey:`, privKey)
     // Get child wif private key
     let wif = child.toWIF()
-    console.log(`${Object.keys(wallet)} child ${i} wif  `, wif)
+    log(`${walletName} child ${i} wif:`, wif)
 
     // Get child extended public key
     let xpub = child.neutered().toBase58()
-    console.log(`${Object.keys(wallet)} child ${i} xpub  `, xpub)
+    log(`${walletName} child ${i} xpub:`, xpub)
     // Get child EC public key
     let pubKey =  child.publicKey.toString('hex')
-    console.log(`${Object.keys(wallet)} child ${i} pubKey  `, pubKey)
+    log(`${walletName} child ${i} pubKey:`, pubKey)
     // Get child EC public key hash
     let pubKeyHash = bitcoin.crypto.hash160(child.publicKey).toString('hex')
-    console.log(`${Object.keys(wallet)} child ${i} pubKey hash `, pubKeyHash)
+    log(`${walletName} child ${i} pubKey hash:`, pubKeyHash)
     // Get child EC public key fingerprint
     let pubKeyFingerprint = bitcoin.crypto.hash160(child.publicKey).slice(0,4).toString('hex')
-    console.log(`${Object.keys(wallet)} child ${i} pubKey fingerprint `, pubKeyFingerprint)
+    log(`${walletName} child ${i} pubKey fingerprint:`, pubKeyFingerprint)
 
     // Addresses
     // P2PKH
     let p2pkh = bitcoin.payments.p2pkh({pubkey: child.publicKey, network}).address
-    console.log(`${Object.keys(wallet)} child ${i} address p2pkh  `, p2pkh)
+    log(`${walletName} child ${i} address p2pkh:`, p2pkh)
     // P2WPKH
     let p2wpkh = bitcoin.payments.p2wpkh({pubkey: child.publicKey, network})
     let p2wpkhAddress = p2wpkh.address
-    console.log(`${Object.keys(wallet)} child ${i} address p2wpkh  `, p2wpkhAddress)
+    log(`${walletName} child ${i} address p2wpkh:`, p2wpkhAddress)
     // P2SH-P2WPKH
     let p2sh_p2wpkh = bitcoin.payments.p2sh({redeem: p2wpkh, network}).address
-    console.log(`${Object.keys(wallet)} child ${i} address p2sh-p2wpkh  `, p2sh_p2wpkh)
-    console.log()
+    log(`${walletName} child ${i} address p2sh-p2wpkh:`, p2sh_p2wpkh)
+    log()
 
     walletsJSON +=
       `{
@@ -145,7 +191,7 @@ wallets.forEach((wallet, wallet_index) => {
 
   // No comma for last wallet
   wallet_index === 5 ? walletsJSON+="]}" : walletsJSON+="],"
-  console.log()
+  log()
 })
 
 const libDir = path.resolve(process.cwd(), 'node_modules', 'bitcointestwalletsgenerator')
