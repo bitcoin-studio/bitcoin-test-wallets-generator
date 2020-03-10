@@ -1,6 +1,7 @@
 = Bitcoin Test Wallets Generator
 
-A Bitcoin test wallets generator to help bitcoin programmers.
+A Bitcoin test wallet's generator to help bitcoin programmers.
+
 
 == Features
 
@@ -8,26 +9,25 @@ A Bitcoin test wallets generator to help bitcoin programmers.
 * Create a json file detailing all the cryptographic materials
 * Import private keys to Bitcoin Core
 
+
 == Requirements
 
 * >= NodeJS v10
 * Bash or a Bash interpreter like Cygwin or Windows Subsystem for Linux (WSL)
 
+
 == How to use it
-
-Install
-
- npm install bitcointestwalletsgenerator
-
-{nbsp}
 
 First launch Bitcoin Core so that the library can import the private keys.
 
-Run
+NOTE: By default, the library is set to the regtest network and uses hardcoded 16 bytes entropy.
 
-NOTE: By default the library is set to the regtest network and uses hardcoded 16 bytes entropy.
+ npx bitcointestwalletsgenerator
 
- npx bitcointestwallets
+or
+
+ git clone git@github.com:bitcoin-studio/Bitcoin-Test-Wallets-Generator.git
+ node generate_wallets.js
 
 {nbsp}
 
@@ -36,22 +36,32 @@ Run with a new set of entropy
 NOTE: 16 bytes entropy = 12 words mnemonic +
 32 bytes entropy = 24 words mnemonic
 
- npx bitcointestwallets --entropy 16
+ npx bitcointestwalletsgenerator --entropy 16
 
 {nbsp}
 
 Set the network
 
- npx bitcointestwallets --network mainnet
+ npx bitcointestwalletsgenerator --network mainnet
 
 {nbsp}
 
 Set the network and entropy
 
- npx bitcointestwallets -n testnet -e 32
+ npx bitcointestwalletsgenerator -n testnet -e 32
+
+{nbsp}
+
+Verbose
+
+ npx bitcointestwalletsgenerator -v
 
 {nbsp}
 
 Help
 
- npx bitcointestwallets --help
+ npx bitcointestwalletsgenerator --help
+
+{nbsp}
+
+Check that private key import was successful with the `listlabels` command in Bitcoin Core console

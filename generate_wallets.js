@@ -9,6 +9,7 @@
 const crypto = require("crypto")
 const program = require('commander')
 const { exec } = require('child_process')
+const fs = require("fs")
 const path = require('path')
 const bitcoin = require('bitcoinjs-lib')
 const bip32 = require('bip32')
@@ -195,7 +196,10 @@ wallets.forEach((wallet, wallet_index) => {
   log()
 })
 
-const libDir = path.resolve(process.cwd(), 'node_modules', 'bitcointestwalletsgenerator')
+// Check if installed as a node module or not
+const nodeModulePath = path.resolve(__dirname, 'node_modules', 'bitcointestwalletsgenerator')
+const libDir = fs.existsSync(nodeModulePath) ? nodeModulePath : __dirname
+
 exec(
   // Write the json file
   `echo '${walletsJSON}' | jq . > wallets.json`, (error, stdout, stderr) => {
