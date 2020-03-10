@@ -182,7 +182,8 @@ wallets.forEach((wallet, wallet_index) => {
           "pubKeyFingerprint": "${pubKeyFingerprint}",
           "p2pkh": "${p2pkh}", 
           "p2sh-p2wpkh": "${p2sh_p2wpkh}", 
-          "p2wpkh": "${p2wpkhAddress}"
+          "p2wpkh": "${p2wpkhAddress}",
+          "path": "m/0\\u0027/0\\u0027/${i}\\u0027"
         }`
 
     // Add comma for all derivations but not last
