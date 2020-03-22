@@ -26,7 +26,7 @@ NOTE: By default, the library is set to the regtest network and uses hardcoded 1
 
 or
 
- git clone git@github.com:bitcoin-studio/Bitcoin-Test-Wallets-Generator.git
+ git clone git@github.com:bitcoin-studio/bitcoin-test-wallets-generator.git
  node generate_wallets.js
 
 {nbsp}
