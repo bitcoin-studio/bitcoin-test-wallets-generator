@@ -13,6 +13,7 @@ A Bitcoin test wallet's generator to help bitcoin programmers.
 == Requirements
 
 * >= NodeJS v10
+* https://stedolan.github.io/jq/download/[jq - JSON processor]
 * Bash or a Bash interpreter like Cygwin or Windows Subsystem for Linux (WSL)
 
 
