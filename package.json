@@ -14,9 +14,9 @@
   },
   "license": "MIT",
   "dependencies": {
-    "bip32": "^2.0.4",
+    "bip32": "^3.0.0",
     "bip39": "^3.0.2",
-    "bitcoinjs-lib": "^4.0.5",
+    "bitcoinjs-lib": "^6.0.0",
     "commander": "^4.0.1"
   }
 }
